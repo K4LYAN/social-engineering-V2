@@ -97,13 +97,12 @@ Login:```http://127.0.0.1:8000/login```
 Enter your ADMIN_SECRET password.
 - Access the dashboard at ```http://127.0.0.1:8000/admin/dashboard```
 
-Testing Real-Time Features
+### Testing Real-Time Features
+- Open the admin dashboard in one browser tab.
+- Log in as a user from another tab.
+- Watch new login events appear instantly on the “Real-Time Stream” tab.
 
-Open the admin dashboard in one browser tab.
-Log in as a user from another tab.
-Watch new login events appear instantly on the “Real-Time Stream” tab.
-
-⚠️ Security Warning
+## ⚠️ Security Warning
 This is a prototype/demo — not for production use.
 
 ❌ Insecure storage: All users and logs are stored in memory only.
@@ -111,7 +110,7 @@ This is a prototype/demo — not for production use.
 ❌ No CSRF protection: Forms are not secured against CSRF attacks.
 
 Use this project only for learning, prototyping, or academic purposes.
-💡 Future Enhancements (Ideas)
+## 💡 Future Enhancements (Ideas)
 
 ✅ Replace in-memory storage with SQLite or PostgreSQL.
 ✅ Hash passwords securely (e.g., bcrypt or passlib).
@@ -119,7 +118,7 @@ Use this project only for learning, prototyping, or academic purposes.
 ✅ Integrate a proper frontend build (React or Vue).
 ✅ Add WebSocket authentication & user sessions.
 
-🧑‍💻 Author
+## 🧑‍💻 Author
 Kalyan
 GitHub: @K4LYAN
 🪪 License
