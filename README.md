@@ -38,19 +38,20 @@
 ## 📸 Screenshots
 
 ### Homepage / Login Page (Desktop View)
-![Login Page Desktop](demo/login.png)
+<img src="demo/login.png" alt="Login Page Desktop" width="400">
 
 ### Login Page (Mobile View)
-![Login Page Mobile](demo/logs.png)
+<img src="demo/logs.png" alt="Login Page Mobile" width="400">
 
 ### Admin Dashboard - Users Tab
-![Users Tab](demo/user.png)
+<img src="demo/user.png" alt="Users Tab" width="400">
 
 ### Admin Dashboard - Login Logs Tab
-![Login Logs Tab](demo/logs.png))
+<img src="demo/logs.png" alt="Login Logs Tab" width="400">
 
 ### Admin Dashboard - Real-Time Stream Tab
-![Real-Time Stream Tab](demo/realtime.png)
+<img src="demo/realtime.png" alt="Real-Time Stream Tab" width="400">
+
 ## 🧩 Technology Stack
 
 | Layer      | Technology                          |
