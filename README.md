@@ -35,7 +35,22 @@
 - Connects to a Socket.IO feed.
 - Displays new login events instantly (no refresh required).
 - Includes subtle fade-in animations for live updates.
+## 📸 Screenshots
 
+### Homepage / Login Page (Desktop View)
+![Login Page Desktop](demo/login.png)
+
+### Login Page (Mobile View)
+![Login Page Mobile](demo/logs.png)
+
+### Admin Dashboard - Users Tab
+![Users Tab](demo/user.png)
+
+### Admin Dashboard - Login Logs Tab
+![Login Logs Tab](demo/logs.png))
+
+### Admin Dashboard - Real-Time Stream Tab
+![Real-Time Stream Tab](demo/realtime.png)
 ## 🧩 Technology Stack
 
 | Layer      | Technology                          |
