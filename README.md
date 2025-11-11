@@ -54,14 +54,30 @@ The `admin_dashboard.html` is a "single-pane-of-glass" for all monitoring, prote
 
 ## 📸 Screenshots
 
-| Login Page (Desktop) | Sign-up Page (Mobile) |
-| <img src="/demo/login.png"> | <img src="/demo/signup.png"> |
-|  |  |
-| **Admin Dashboard - <img src="/demo/users.png" width="300px" height="300px">** | **Admin Dashboard - Login Logs Tab** |
-|  |  |
-| **Admin Dashboard - Real-time Stream** | |
-|  | |
-
+<table>
+  <tr>
+    <td align="center"><b>Login (Desktop)</b></td>
+    <td align="center"><b>Login (Mobile / Logs)</b></td>
+  </tr>
+  <tr>
+    <td><img src="demo/login.png" alt="Login Page Desktop" width="400"></td>
+    <td><img src="demo/logs.png" alt="Login Page Mobile" width="400"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Admin - Users Tab</b></td>
+    <td align="center"><b>Admin - Logs Tab</b></td>
+  </tr>
+  <tr>
+    <td><img src="demo/user.png" alt="Users Tab" width="400"></td>
+    <td><img src="demo/logs.png" alt="Login Logs Tab" width="400"></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><b>Admin - Real-Time Stream</b></td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2"><img src="demo/realtime.png" alt="Real-Time Stream Tab" width="400"></td>
+  </tr>
+</table>
 ## ⚙️ Getting Started
 
 To get a local copy up and running, follow these simple steps.
