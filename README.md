@@ -3,6 +3,7 @@ This project is a prototype web application built with FastAPI and Socket.IO. It
 
 The application demonstrates:
 
+------------------
 1. Modern, responsive, mobile-first UI design for login pages.
 2. A secure, single-page admin panel with a tabbed interface and data export.
 3. Real-time updates using Socket.IO (for live login events).
@@ -11,6 +12,7 @@ The application demonstrates:
 
 Features
 
+------------------
 1. User Features
 /signup: A simple page to create a new user account.
 /login: A modern, Google-style responsive login page that adapts perfectly to both desktop (card view) and mobile (single-column view).
@@ -20,6 +22,8 @@ Features
 /admin/dashboard: A single-page, consolidated dashboard with a modern dark-mode UI, icons, and three tabs:
 
 Users Tab:
+
+------------------
 1. Displays a list of all registered users and their passwords.
 2. Features a live search bar to filter the list instantly.
 3. Auto-refreshes the user list every 5 seconds by polling the /api/get_users endpoint.
@@ -27,6 +31,7 @@ Users Tab:
 
 Login Logs Tab:
 
+------------------
 Shows a static table of all login events captured since the server started.
 Includes a "Download CSV" button to export the complete log history.
 
@@ -37,17 +42,16 @@ Instantly displays new login events as they happen with a subtle fade-in animati
 
 Technology Stack:
 
+------------------
 Backend: FastAPI
-
 Real-time: Python-SocketIO
-
 Server: Uvicorn
-
 Frontend: Jinja2 Templates
-
 Styling: Bootstrap 5 (with Bootstrap Icons and Google Sans font)
 
 Project Structure
+
+------------------
 .
 ├── main.py             # The main FastAPI & Socket.IO application
 ├── templates/
