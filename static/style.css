@@ -1,0 +1,6 @@
+/* static/style.css */
+.login-card, .signup-card {
+  width: 420px;
+  border-radius: 12px;
+}
+body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }

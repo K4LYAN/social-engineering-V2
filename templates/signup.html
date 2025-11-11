@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Create your Google Account</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      width: 420px;
+      padding: 40px;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      box-shadow: 0 2px 3px rgba(60,64,67,0.15);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header img {
+      width: 75px;
+    }
+    h2 {
+      font-weight: 500;
+      margin-top: 10px;
+      color: #202124;
+    }
+    p {
+      color: #5f6368;
+      font-size: 14px;
+      text-align: center;
+    }
+    form {
+      margin-top: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+    }
+    a {
+      color: #1a73e8;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    button {
+      background-color: #1a73e8;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background-color: #1669c1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_74x24dp.png" alt="Google">
+      <h2>Create your Google Account</h2>
+      <p>Continue to Google services</p>
+    </div>
+    {% if error %}
+      <div style="color:red; font-size:13px; text-align:center;">{{ error }}</div>
+    {% endif %}
+    {% if success %}
+      <div style="color:green; font-size:13px; text-align:center;">{{ success }}</div>
+    {% endif %}
+    <form method="post" action="/signup">
+      <input type="text" name="username" placeholder="Your username" required>
+      <input type="password" name="password" placeholder="Create a password" required>
+      <div class="actions">
+        <a href="/login">Sign in instead</a>
+        <button type="submit">Next</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

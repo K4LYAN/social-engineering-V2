@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Admin Dashboard</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- NEW: Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <!-- NEW: Google Sans Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Socket.IO for the real-time tab -->
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  
+  <!-- Modern Dark-Mode Styles -->
+  <style>
+    :root {
+      --background: #202124;
+      --card: #2d2e30;
+      --card-header: #3c4043;
+      --text: #e8eaed;
+      --muted: #9aa0a6;
+      --border: #5f6368;
+      --bs-body-color: var(--text);
+      --bs-body-bg: var(--background);
+      --bs-btn-color: var(--text);
+      --bs-btn-border-color: var(--border);
+    }
+    
+    body {
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+      /* NEW: Use Google Sans font */
+      font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    
+    .card {
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      /* NEW: Softer shadow */
+      box-shadow: 0 8px 25px rgba(0,0,0,.15);
+    }
+    
+    .form-control {
+      background-color: var(--background);
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .form-control:focus {
+      background-color: var(--background);
+      border-color: #8ab4f8;
+      color: var(--text);
+      box-shadow: 0 0 0 .25rem rgba(138, 180, 248, .25);
+    }
+    .form-control::placeholder {
+      color: var(--muted);
+    }
+    
+    /* Dark-mode tabs */
+    .nav-tabs {
+      border-bottom-color: var(--border);
+    }
+    .nav-tabs .nav-link {
+      color: var(--muted);
+      border-color: transparent;
+      /* NEW: Add space for icons */
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .nav-tabs .nav-link.active {
+      color: var(--text);
+      background-color: var(--card);
+      border-color: var(--border) var(--border) var(--card);
+      font-weight: 500;
+    }
+    .nav-tabs .nav-link:hover {
+      border-color: transparent;
+      color: var(--text);
+    }
+    .tab-content {
+      padding-top: 1.5rem;
+    }
+
+    /* Dark-mode event card for real-time stream */
+    .event-card {
+        background-color: #3c4043;
+        border: 1px solid var(--border);
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    /* NEW: Animation for new events */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .new-event {
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    /* NEW: Style for download button */
+    .btn-outline-info {
+        color: #72cff8;
+        border-color: #72cff8;
+    }
+    .btn-outline-info:hover {
+        color: #202124;
+        background-color: #72cff8;
+        border-color: #72cff8;
+    }
+    
+    /* NEW: Align icons better */
+    .bi {
+        vertical-align: -0.125em;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        
+        <!-- Main Card -->
+        <div class="card shadow-lg">
+          
+          <!-- NEW: Card Header -->
+          <div class="card-header d-flex justify-content-between align-items-center" style="background-color: var(--card-header); border-bottom: 1px solid var(--border);">
+            <h3 class="mb-0 d-flex align-items-center gap-2">
+              <i class="bi bi-shield-check" style="color: #8ab4f8;"></i>
+              Admin Dashboard
+            </h3>
+            <span class="text-muted small"><i class="bi bi-lock-fill"></i> Secure Panel</span>
+          </div>
+          
+          <div class="card-body p-4 p-md-5">
+            
+            <!-- Tab Navigation -->
+            <ul class="nav nav-tabs" id="adminTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users-panel" type="button" role="tab">
+                  <i class="bi bi-people-fill"></i> Users
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="logs-tab" data-bs-toggle="tab" data-bs-target="#logs-panel" type="button" role="tab">
+                  <i class="bi bi-file-earmark-text-fill"></i> Login Logs
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="stream-tab" data-bs-toggle="tab" data-bs-target="#stream-panel" type="button" role="tab">
+                  <i class="bi bi-broadcast-pin"></i> Real-time Stream
+                </button>
+              </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="adminTabContent">
+              
+              <!-- ===== 1. Users Panel ===== -->
+              <div class="tab-pane fade show active" id="users-panel" role="tabpanel">
+                <p class="text-muted small">This list auto-refreshes every 5 seconds. This is insecure sample data.</p>
+                
+                <!-- NEW: Layout for search + download -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-3">
+                  <input type="text" id="searchInput" class="form-control" placeholder="Search for users...">
+                  <button id="downloadCsvBtn" class="btn btn-outline-info w-100 w-md-auto" style="white-space: nowrap;">
+                    <i class="bi bi-download"></i> Download CSV
+                  </button>
+                </div>
+                
+                <div class="table-responsive">
+                  <table class="table table-dark table-striped table-hover align-middle">
+                    <thead>
+                      <tr>
+                        <th>Username</th>
+                        <th>Password (plaintext)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="user-table-body">
+                      <!-- User JS populates this -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- ===== 2. Login Logs Panel ===== -->
+              <div class="tab-pane fade" id="logs-panel" role="tabpanel">
+                <p class="text-muted small">Shows a static list of login events from when the page was loaded. This is insecure sample data.</p>
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped table-hover table-sm align-middle">
+                        <thead><tr><th>Time (UTC)</th><th>Username</th><th>Password</th><th>IP</th></tr></thead>
+                        <tbody>
+                          {% for ev in events %}
+                            <tr>
+                              <td>{{ ev.ts }}</td>
+                              <td>{{ ev.username }}</td>
+                              <td>{{ ev.password }}</td>
+                              <td>{{ ev.ip }}</td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+              </div>
+
+              <!-- ===== 3. Real-time Stream Panel ===== -->
+              <div class="tab-pane fade" id="stream-panel" role="tabpanel">
+                <p class="text-muted small">Shows new login events as they happen using Socket.IO.</p>
+                <div id="events-feed" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Real-time JS populates this -->
+                </div>
+              </div>
+
+            </div> <!-- /tab-content -->
+          </div>
+        </div> <!-- /card -->
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Initial User Data (for Users Tab) -->
+  <script id="initial-data" type="application/json">
+    {{ users | tojson | safe }}
+  </script>
+
+  <!-- Bootstrap JS (for tabs) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- JavaScript for all tabs -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      
+      // ===== GLOBAL DATA =====
+      let currentUsers = {}; // Store user data for CSV export
+      
+      // ===== USERS TAB SCRIPT =====
+      const userTableBody = document.getElementById('user-table-body');
+      const searchInput = document.getElementById('searchInput');
+      const downloadCsvBtn = document.getElementById('downloadCsvBtn');
+      
+      function populateUserTable(users) {
+        userTableBody.innerHTML = '';
+        if (Object.keys(users).length === 0) {
+          userTableBody.innerHTML = '<tr><td colspan="2" class="text-center text-muted">No users found.</td></tr>';
+          return;
+        }
+        for (const username in users) {
+          const password = users[username];
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${username}</td><td>${password}</td>`;
+          userTableBody.appendChild(tr);
+        }
+      }
+      
+      function filterUserTable() {
+        const filter = searchInput.value.toLowerCase();
+        const rows = userTableBody.getElementsByTagName('tr');
+        for (const row of rows) {
+          const username = row.cells[0] ? row.cells[0].textContent.toLowerCase() : '';
+          row.style.display = username.includes(filter) ? '' : 'none';
+        }
+      }
+
+      async function fetchAndUpdateUsers() {
+        try {
+          const response = await fetch('/api/get_users');
+          if (!response.ok) return;
+          const newUsers = await response.json();
+          
+          currentUsers = newUsers; // Store for CSV export
+          
+          populateUserTable(newUsers);
+          filterUserTable(); 
+        } catch (error) {
+          console.error('Error fetching users:', error);
+        }
+      }
+      
+      // NEW: CSV Download Function
+      function downloadUserCSV() {
+        if (Object.keys(currentUsers).length === 0) {
+          alert('No user data to download.');
+          return;
+        }
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "username,password\r\n"; // Header row
+
+        for (const username in currentUsers) {
+          const password = currentUsers[username];
+          // Enclose password in quotes in case it contains commas
+          csvContent += `${username},"${password}"\r\n`;
+        }
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "users.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      // Init User Tab
+      searchInput.addEventListener('input', filterUserTable);
+      downloadCsvBtn.addEventListener('click', downloadUserCSV); // NEW
+      
+      try {
+        const initialDataEl = document.getElementById('initial-data');
+        const initialUsers = JSON.parse(initialDataEl.textContent);
+        currentUsers = initialUsers; // Store initial data
+        populateUserTable(initialUsers);
+      } catch (e) {
+        populateUserTable({});
+      }
+      setInterval(fetchAndUpdateUsers, 5000); // Poll for user updates
+
+      
+      // ===== REAL-TIME STREAM TAB SCRIPT =====
+      const socket = io();
+      const eventsFeed = document.getElementById('events-feed');
+      
+      socket.on("connect", () => {
+        console.log("Connected to real-time socket");
+      });
+      
+      socket.on("login_event", (ev) => {
+        const row = document.createElement("div");
+        // NEW: Added animation class and icon
+        row.className = "card event-card my-2 p-2 new-event";
+        row.innerHTML = `
+          <i class="bi bi-box-arrow-in-right text-success fs-4"></i>
+          <div>
+            <strong>${ev.username}</strong> logged in at ${ev.ts} from ${ev.ip}
+            <div class="small text-muted">password: ${ev.password}</div>
+          </div>
+        `;
+        eventsFeed.prepend(row);
+      });
+
+    });
+  </script>
+
+</body>
+</html>
