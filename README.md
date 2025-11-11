@@ -1,97 +1,96 @@
-# 🧠 Social Engineering V2
+# 🧠 Social Engineering Project
 
-<summary>A prototype web application built with FastAPI and Socket.IO, featuring a modern, responsive authentication system and a real-time admin dashboard for monitoring user activity.</summary>
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![Socket.IO](https://img.shields.io/badge/Socket.IO-010101?style=for-the-badge&logo=socket.io&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Jinja2](https://img.shields.io/badge/Jinja2-B42B2B?style=for-the-badge&logo=jinja&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3.0-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)
 
-> ⚠️ **Note:** This project is for educational and demonstration purposes only. It is not secure for production use.
+> ⚠️ **Note:** This project is for educational and demonstration purposes only. It is not intended for production use.
 
-## 🚀 Features Overview
+---
 
-### 🔐 User Features
+## 🎯 About the Project
 
-- **Sign Up** (`/signup`): Create a new user account easily.
-- **Login** (`/login`): A modern, Google-style responsive login page that:
-  - Adjusts seamlessly between desktop (card layout) and mobile (single-column layout).
-  - Provides a clean, minimalist, and user-friendly interface.
+This is a comprehensive web application, built with FastAPI and Socket.IO, that provides a complete user authentication system and a powerful, real-time admin dashboard for monitoring.
 
-### 🧑‍💼 Admin Features
+The project is split into two main parts:
+1.  **A User-Facing Portal:** A modern, responsive, Google-style interface for users to sign up and log in.
+2.  **An Admin Dashboard:** A secure, single-page application for an administrator to monitor all user activity in real-time, view historical logs, and manage user data.
 
-- **Admin Login** (`/admin/login`):
-  - Protected by an environment variable `ADMIN_SECRET`.
-  - Only admins with the correct secret can access the dashboard.
-- **Admin Dashboard** (`/admin/dashboard`):  
-  A single-page, dark-mode dashboard with a tabbed interface and real-time updates, featuring:
+## ✨ Key Features
 
-#### 🧍 Users Tab
-- Displays all registered users and their (plaintext) passwords.
-- Includes a live search bar for instant filtering.
-- Auto-refreshes every 5 seconds using `/api/get_users`.
-- Export data with a “Download CSV” button.
+### 🔐 User-Facing Features
 
-#### 🕒 Login Logs Tab
-- Displays a static table of all login events since server startup.
-- Provides a “Download CSV” button for exporting the complete log.
+* **Modern, Responsive UI:** The entire user-facing site (`login.html`, `signup.html`) is styled to look and feel like the modern Google sign-in flow. It features a dark-mode "box" container on desktop that collapses to a clean, single-column layout on mobile devices.
+* **Multi-Step Sign-up:** The `signup.html` page provides a 4-step user registration flow (Name, Basic Info, Username, Password) guided by JavaScript, matching the experience of a professional web service.
+* **Detailed Client-Side Logging:** This is a core feature. When a user logs in, the `login.html` page uses JavaScript to discreetly collect a comprehensive snapshot of their device, including:
+    * Operating System (e.g., Windows, MacOS, Linux)
+    * Browser (e.g., Chrome, Firefox, Safari)
+    * Screen Resolution
+    * Timezone
+    * Language
+    * Number of CPU Cores
+    * Full User-Agent string
 
-#### ⚡ Real-Time Stream Tab
-- Connects to a Socket.IO feed.
-- Displays new login events instantly (no refresh required).
-- Includes subtle fade-in animations for live updates.
+### 🧑‍💼 Admin-Facing Features
+
+The `admin_dashboard.html` is a "single-pane-of-glass" for all monitoring, protected by a separate admin login (`admin_login.html`). It includes:
+
+* **Three-Tab Interface:** All information is organized into three main sections:
+    1.  **Users Tab:** Displays a list of all registered users. This list automatically refreshes every 5 seconds by polling the `/api/get_users` endpoint. It also includes a live search bar and a "Download CSV" button to export the user list.
+    2.  **Login Logs Tab:** Shows a detailed, historical table of every login event (both successful and failed) since the server started. This table includes all the rich device information (OS, browser, IP, etc.) collected from the login page. This entire log can be downloaded as a CSV.
+    3.  **Real-time Stream Tab:** This is the primary monitoring feature. It connects to the FastAPI backend via Socket.IO. When any user attempts to log in, their complete login event (including all device info) is instantly broadcast and appears at the top of this feed with an animation, allowing for live tracking of all user activity.
+
+## 💻 Technology Stack
+
+| Layer | Technology | Description |
+|---|---|---|
+| **Backend** | FastAPI | A modern, high-performance Python web framework for building APIs. |
+| **Real-time** | Python-SocketIO | Enables real-time, bidirectional communication for the admin dashboard. |
+| **Server** | Uvicorn | An ASGI server, required to run the FastAPI application. |
+| **Frontend** | Jinja2 Templates | Used to serve the HTML pages from the FastAPI backend. |
+| **Styling** | Bootstrap 5 | For the modern, responsive layout of all pages. |
+
 ## 📸 Screenshots
 
-### Homepage / Login Page (Desktop View)
-<img src="demo/login.png" alt="Login Page Desktop" width="400">
+| Login Page (Desktop) | Sign-up Page (Mobile) |
+| :---: | :---: |
+|  |  |
+| **Admin Dashboard - <img src="/demo/login.png">** | **Admin Dashboard - Login Logs Tab** |
+|  |  |
+| **Admin Dashboard - Real-time Stream** | |
+|  | |
 
-### Login Page (Mobile View)
-<img src="demo/logs.png" alt="Login Page Mobile" width="400">
+## ⚙️ Getting Started
 
-### Admin Dashboard - Users Tab
-<img src="demo/user.png" alt="Users Tab" width="400">
-
-### Admin Dashboard - Login Logs Tab
-<img src="demo/logs.png" alt="Login Logs Tab" width="400">
-
-### Admin Dashboard - Real-Time Stream Tab
-<img src="demo/realtime.png" alt="Real-Time Stream Tab" width="400">
-
-## 🧩 Technology Stack
-
-| Layer      | Technology                          |
-|------------|-------------------------------------|
-| **Backend** | FastAPI, Python-SocketIO           |
-| **Server**  | Uvicorn                            |
-| **Frontend**| Jinja2 Templates                   |
-| **Styling** | Bootstrap 5 + Bootstrap Icons + Google Sans font |
-
-## 📂 Project Structure
-```
-.
-├── main.py                    # The main FastAPI & Socket.IO application
-├── templates/
-│   ├── login.html             # Public user login page (responsive)
-│   ├── signup.html            # Public user signup page
-│   ├── admin_login.html       # Admin-only login page
-│   └── admin_dashboard.html   # All-in-one admin dashboard
-└── static/
-└── (empty)                # For optional .css or .js files
-```
-## ⚙️ Setup & Installation
+To get a local copy up and running, follow these simple steps.
 
 ### 1️⃣ Prerequisites
-- Python 3.8+
-- pip (Python package installer)
+
+* Python 3.8+
+* pip (Python package installer)
 
 ### 2️⃣ Installation
-Clone the repository and install dependencies:
 
+1.  **Clone the repository:**
+    ```sh
+    git clone [https://github.com/your-username/your-project-name.git](https://github.com/your-username/your-project-name.git)
+    cd your-project-name
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    pip install "fastapi[all]" uvicorn python-socketio
+    ```
+
+### 3️⃣ Configuration
+This project likely requires an admin secret to protect the dashboard. Set this as an environment variable:
+
+**On Linux/macOS:**
 ```bash
-git clone https://github.com/K4LYAN/social-engineering-V2.git
-cd social-engineering-V2
-pip install "fastapi[all]" uvicorn python-socketio
-````
-
-## 3️⃣ Configuration (Admin Secret)
-- Set an environment variable for the admin dashboard password:
-###On Linux/macOS:
--bashexport ADMIN_SECRET="your_super_secret_password"
+export ADMIN_SECRET="your_super_secret_password"
+```
 ### On Windows (CMD):
 - cmdset ADMIN_SECRET="your_super_secret_password"
 - If no variable is set, the app defaults to the insecure password adminpass.
