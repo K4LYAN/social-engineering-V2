@@ -78,6 +78,7 @@ The `admin_dashboard.html` is a "single-pane-of-glass" for all monitoring, prote
     <td align="center" colspan="2"><img src="demo/realtime.png" alt="Real-Time Stream Tab" width="400"></td>
   </tr>
 </table>
+
 ## ⚙️ Getting Started
 
 To get a local copy up and running, follow these simple steps.
