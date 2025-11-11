@@ -1,4 +1,4 @@
-#social-engineering-V2
+# social-engineering-V2
 This project is a prototype web application built with FastAPI and Socket.IO. It features a modern, responsive user authentication system and a comprehensive, real-time admin dashboard for monitoring user activity.
 
 The application demonstrates:
