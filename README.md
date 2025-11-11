@@ -154,5 +154,5 @@ Use this project only for learning, prototyping, or academic purposes.
 Kalyan
 GitHub: @K4LYAN
 🪪 License
-## **This project is released under the MIT License.**
-## **Feel free to fork, modify, and experiment responsibly.**
+#### **This project is released under the MIT License.**
+#### **Feel free to fork, modify, and experiment responsibly.**
