@@ -105,22 +105,22 @@ Enter your ADMIN_SECRET password.
 ## ⚠️ Security Warning
 This is a prototype/demo — not for production use.
 
-❌ Insecure storage: All users and logs are stored in memory only.
-❌ Plaintext passwords: For demonstration purposes only.
-❌ No CSRF protection: Forms are not secured against CSRF attacks.
+- ❌ Insecure storage: All users and logs are stored in memory only.
+- ❌ Plaintext passwords: For demonstration purposes only.
+- ❌ No CSRF protection: Forms are not secured against CSRF attacks.
 
 Use this project only for learning, prototyping, or academic purposes.
 ## 💡 Future Enhancements (Ideas)
 
-✅ Replace in-memory storage with SQLite or PostgreSQL.
-✅ Hash passwords securely (e.g., bcrypt or passlib).
-✅ Add JWT-based authentication.
-✅ Integrate a proper frontend build (React or Vue).
-✅ Add WebSocket authentication & user sessions.
+- ✅ Replace in-memory storage with SQLite or PostgreSQL.
+- ✅ Hash passwords securely (e.g., bcrypt or passlib).
+- ✅ Add JWT-based authentication.
+- ✅ Integrate a proper frontend build (React or Vue).
+- ✅ Add WebSocket authentication & user sessions.
 
 ## 🧑‍💻 Author
 Kalyan
 GitHub: @K4LYAN
 🪪 License
-This project is released under the MIT License.
-Feel free to fork, modify, and experiment responsibly.
+**This project is released under the MIT License.
+Feel free to fork, modify, and experiment responsibly.**
