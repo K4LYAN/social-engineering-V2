@@ -55,9 +55,9 @@ The `admin_dashboard.html` is a "single-pane-of-glass" for all monitoring, prote
 ## 📸 Screenshots
 
 | Login Page (Desktop) | Sign-up Page (Mobile) |
-| :---: | :---: |
+| <img src="/demo/login.png"> | <img src="/demo/signup.png"> |
 |  |  |
-| **Admin Dashboard - <img src="/demo/login.png">** | **Admin Dashboard - Login Logs Tab** |
+| **Admin Dashboard - <img src="/demo/users.png" width="300px" height="300px">** | **Admin Dashboard - Login Logs Tab** |
 |  |  |
 | **Admin Dashboard - Real-time Stream** | |
 |  | |
