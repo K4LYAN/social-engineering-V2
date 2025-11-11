@@ -1,104 +1,454 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Create your Google Account</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #fff;
-      display: flex;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Create your Google Account</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Roboto&display=swap" rel="stylesheet">
+<!-- 
+  *** STYLES (Copied from login.html for matching UI) ***
+-->
+<style>
+  :root {
+    --background:#202124; 
+    --card:#0f0e0e; 
+    --text:#e8eaed; 
+    --muted:#e6e5e5;
+    --link: #8ab4f8;
+    --btn-dark-bg: rgba(60, 64, 67, 0.75);
+    --btn-dark-hover: rgba(79, 79, 94, 0.166);
+    --border:#ffffff; 
+    --btn:#8ab4f8; 
+    --btn-h:#aecbfa;
+  }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    background: var(--background);
+    font-family: 'Google Sans', Roboto, Arial, sans-serif;
+    color: var(--text);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 24px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .box {
+    width: 100%;
+    max-width: 450px;
+  }
+
+  .google-logo { 
+    width: 75px; 
+    margin-bottom: 16px; 
+    display: block;
+    margin-left: -4px;
+  }
+  h1 { 
+    font-weight: 400; 
+    font-size: 24px; 
+    margin: 0 0 8px 0; 
+  }
+  .sub { 
+    color: var(--muted); 
+    font-size: 16px;
+    margin-bottom: 24px;
+  }
+
+  .left { margin-bottom: 24px; }
+  .right { width: 100%; }
+
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  select {
+    width: 100%;
+    padding: 18px 14px; 
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text);
+    font-size: 16px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+  }
+
+  input:focus,
+  select:focus {
+    outline: none;
+    border: 2px solid var(--link);
+    padding: 17px 13px; /* Adjust padding to prevent jump */
+  }
+  
+  /* Style for select dropdowns */
+  select {
+    color: var(--muted);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%239aa0a6' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+  }
+  select option {
+    background: var(--background);
+    color: var(--text);
+  }
+
+  a { color: var(--link); font-size: 14px; text-decoration: none; font-weight: 500; }
+  a:hover { text-decoration: underline; }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end; /* Pushes button to the right */
+    align-items: center;
+    margin-top: 36px;
+  }
+
+  /* "Next" button */
+  button {
+    background: var(--btn);
+    color: #202124;
+    border: none;
+    border-radius: 24px;
+    padding: 10px 28px;
+    font-weight: 500;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color .2s;
+  }
+  button:hover { background: var(--btn-h); }
+   
+  .footer {
+    flex-shrink: 0;
+    width: 100%;
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+  .footer-links { display: flex; gap: 16px; }
+  .footer-links a { color: var(--muted); }
+  .footer-links a:hover { text-decoration: underline; }
+
+  /* --- Helper classes --- */
+  .hidden-step {
+    display: none;
+  }
+  .input-group {
+    display: flex;
+    gap: 12px;
+  }
+  .input-group > * {
+    flex: 1;
+  }
+  
+  /* Special style for username input */
+  .username-input-wrapper {
+    position: relative;
+  }
+  .username-suffix {
+    position: absolute;
+    right: 15px;
+    top: 18px;
+    color: var(--muted);
+    font-size: 16px;
+  }
+  #username {
+    padding-right: 110px; /* Make space for @gmail.com */
+  }
+
+  /* Show password checkbox */
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    color: var(--muted);
+  }
+  .checkbox-group input {
+    width: auto;
+    margin: 0;
+  }
+
+  /* --- Desktop Styles --- */
+  @media(min-width: 768px){
+    main {
       justify-content: center;
-      align-items: center;
-      height: 100vh;
     }
-    .container {
-      width: 420px;
-      padding: 40px;
-      border: 1px solid #dadce0;
-      border-radius: 8px;
-      box-shadow: 0 2px 3px rgba(60,64,67,0.15);
-    }
-    .header {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .header img {
-      width: 75px;
-    }
-    h2 {
-      font-weight: 500;
-      margin-top: 10px;
-      color: #202124;
-    }
-    p {
-      color: #5f6368;
-      font-size: 14px;
-      text-align: center;
-    }
-    form {
-      margin-top: 20px;
-    }
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border: 1px solid #dadce0;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-    .actions {
+
+    .box {
+      background: var(--card);
+      border-radius: 28px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-top: 20px;
+      align-items: flex-start;
+      width: 1050px;
+      max-width: 90%;
+      padding: 76px 64px;
+      margin-bottom: 30px;
     }
-    a {
-      color: #1a73e8;
-      text-decoration: none;
-      font-size: 13px;
+    
+    .left { flex: 1; margin-bottom: 0; }
+    .right { flex: 1; margin-left: 40px; }
+
+    .google-logo { 
+      width: 50px;
+      margin-top: -30px; 
+      margin-bottom:30px; 
     }
-    a:hover {
-      text-decoration: underline;
+    h1 { font-size: 42px; }
+    .sub { font-size: 16px; }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    select { 
+      font-size: 15px; 
+      width: 100%; /* Use 100% width for all inputs */
+      padding: 16px;
+      margin-top: 0;
     }
-    button {
-      background-color: #1a73e8;
-      color: #fff;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 4px;
-      font-weight: 500;
-      cursor: pointer;
-      font-size: 14px;
+    input:focus,
+    select:focus {
+      padding: 15px 13px; /* Adjust for 2px border */
     }
-    button:hover {
-      background-color: #1669c1;
+    .username-suffix {
+      top: 16px;
     }
-  </style>
+  }
+
+  /* --- Mobile Styles --- */
+  @media(max-width: 767px) {
+    .footer {
+      flex-direction: column;
+      gap: 12px;
+    }
+    .input-group {
+      flex-direction: column;
+      gap: 12px;
+    }
+    h1 { font-size: 28px; }
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_74x24dp.png" alt="Google">
-      <h2>Create your Google Account</h2>
-      <p>Continue to Google services</p>
+
+<main>
+  <div class="box">
+    <!-- Left side (Logo/Title) -->
+    <div class="left">
+      <img src="/static/google.png" alt="google-logo" class="google-logo">
+      <!-- Title and Subtitle will be updated by JS -->
+      <h1 id="step-title">Create a Google Account</h1>
+      <div class="sub" id="step-subtitle">Enter your name</div>
     </div>
-    {% if error %}
-      <div style="color:red; font-size:13px; text-align:center;">{{ error }}</div>
-    {% endif %}
-    {% if success %}
-      <div style="color:green; font-size:13px; text-align:center;">{{ success }}</div>
-    {% endif %}
-    <form method="post" action="/signup">
-      <input type="text" name="username" placeholder="Your username" required>
-      <input type="password" name="password" placeholder="Create a password" required>
-      <div class="actions">
-        <a href="/login">Sign in instead</a>
-        <button type="submit">Next</button>
-      </div>
-    </form>
+
+    <!-- Right side (Form) -->
+    <div class="right">
+      
+      {% if error %}
+        <div style="color:#f28b82;font-size:13px; margin-bottom: 15px;">{{ error }}</div>
+      {% endif %}
+      {% if success %}
+        <div style="color:#81c995;font-size:13px; margin-bottom: 15px;">{{ success }}</div>
+      {% endif %}
+
+      <form id="signupForm" method="post" action="/signup">
+        
+        <!-- ===== STEP 1: NAME ===== -->
+        <div id="step-name">
+          <input type="text" name="first_name" id="first_name" placeholder="First name" required>
+          <input type="text" name="surname" id="surname" placeholder="Surname (optional)">
+          
+          <div class="actions">
+            <a href="/login">Sign in instead</a>
+            <button type="button" id="btn-next-name">Next</button>
+          </div>
+        </div>
+        
+        <!-- ===== STEP 2: BASIC INFO ===== -->
+        <div id="step-basic" class="hidden-step">
+          <div class="input-group">
+            <select name="month" id="month" required>
+              <option value="" disabled selected>Month</option>
+              <option value="1">January</option>
+              <option value="2">February</option>
+              <option value="3">March</option>
+              <option value="4">April</option>
+              <option value="5">May</option>
+              <option value="6">June</option>
+              <option value="7">July</option>
+              <option value="8">August</option>
+              <option value="9">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+            <input type="text" name="day" id="day" placeholder="Day" required>
+            <input type="text" name="year" id="year" placeholder="Year" required>
+          </div>
+          <select name="gender" id="gender" required>
+            <option value="" disabled selected>Gender</option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="other">Rather not say</option>
+            <option value="custom">Custom</option>
+          </select>
+          <a href="#">Why we ask for your birthday and gender</a>
+          
+          <div class="actions">
+            <button type="button" id="btn-next-basic">Next</button>
+          </div>
+        </div>
+
+        <!-- ===== STEP 3: USERNAME ===== -->
+        <div id="step-username" class="hidden-step">
+          <div class="username-input-wrapper">
+            <input type="text" name="username_prefix" id="username_prefix" placeholder="Username" required>
+            <span class="username-suffix">@gmail.com</span>
+          </div>
+          <!-- This hidden input will be populated by JS -->
+          <input type="hidden" name="username" id="username"> 
+          <a href="#">Use your existing email</a>
+          
+          <div class="actions">
+            <button type="button" id="btn-next-username">Next</button>
+          </div>
+        </div>
+        
+        <!-- ===== STEP 4: PASSWORD ===== -->
+        <div id="step-password" class="hidden-step">
+          <input type="password" name="password" id="password" placeholder="Password" required>
+          <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm" required>
+          <div class="checkbox-group">
+            <input type="checkbox" id="show-password">
+            <label for="show-password">Show password</label>
+          </div>
+          
+          <div class="actions">
+            <button type="submit" id="btn-submit-form">Next</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
   </div>
+</main>
+
+<div class="footer">
+  <div>English (United Kingdom) ▾</div>
+  <div class="footer-links">
+    <a href="#">Help</a>
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    
+    // --- Step Elements ---
+    const stepName = document.getElementById('step-name');
+    const stepBasic = document.getElementById('step-basic');
+    const stepUsername = document.getElementById('step-username');
+    const stepPassword = document.getElementById('step-password');
+    
+    // --- Title Elements ---
+    const stepTitle = document.getElementById('step-title');
+    const stepSubtitle = document.getElementById('step-subtitle');
+    
+    // --- Buttons ---
+    const btnNextName = document.getElementById('btn-next-name');
+    const btnNextBasic = document.getElementById('btn-next-basic');
+    const btnNextUsername = document.getElementById('btn-next-username');
+    
+    // --- Form & Inputs ---
+    const signupForm = document.getElementById('signupForm');
+    const usernamePrefix = document.getElementById('username_prefix');
+    const usernameFull = document.getElementById('username');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+    const showPassword = document.getElementById('show-password');
+
+    // --- Step 1 to 2 ---
+    btnNextName.addEventListener('click', () => {
+      if (document.getElementById('first_name').value.trim() === '') {
+        alert('Please enter your first name.');
+        return;
+      }
+      stepName.classList.add('hidden-step');
+      stepBasic.classList.remove('hidden-step');
+      stepTitle.textContent = 'Basic information';
+      stepSubtitle.textContent = 'Enter your birthday and gender';
+    });
+
+    // --- Step 2 to 3 ---
+    btnNextBasic.addEventListener('click', () => {
+      // Add more validation if needed (day, month, year)
+      stepBasic.classList.add('hidden-step');
+      stepUsername.classList.remove('hidden-step');
+      stepTitle.textContent = 'How you\'ll sign in';
+      stepSubtitle.textContent = 'Create a Gmail address for signing in to your Google Account';
+    });
+
+    // --- Step 3 to 4 ---
+    btnNextUsername.addEventListener('click', () => {
+      if (usernamePrefix.value.trim() === '') {
+        alert('Please choose a username.');
+        return;
+      }
+      // Set the full username@gmail.com to the hidden input
+      usernameFull.value = usernamePrefix.value + '@gmail.com';
+      
+      stepUsername.classList.add('hidden-step');
+      stepPassword.classList.remove('hidden-step');
+      stepTitle.textContent = 'Create a strong password';
+      stepSubtitle.textContent = 'Create a strong password with a mixture of letters, numbers and symbols';
+    });
+
+    // --- Password Visibility ---
+    showPassword.addEventListener('change', (e) => {
+      const isChecked = e.target.checked;
+      password.type = isChecked ? 'text' : 'password';
+      confirmPassword.type = isChecked ? 'text' : 'password';
+    });
+
+    // --- Final Form Submission ---
+    signupForm.addEventListener('submit', (e) => {
+      // Re-set the full username just in case
+      usernameFull.value = usernamePrefix.value + '@gmail.com';
+      
+      if (password.value.length < 8) {
+        e.preventDefault(); // Stop submission
+        alert('Password must be at least 8 characters long.');
+        return;
+      }
+      if (password.value !== confirmPassword.value) {
+        e.preventDefault(); // Stop submission
+        alert('Passwords do not match.');
+        return;
+      }
+      // If all checks pass, the form will submit normally.
+    });
+
+  });
+</script>
+
 </body>
 </html>

