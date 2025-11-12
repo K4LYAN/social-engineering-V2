@@ -1,8 +1,27 @@
 {
+  "version": 2,
   "builds": [
-    { "src": "api/index.py", "use": "@vercel/python" }
+    {
+      "src": "main.py",
+      "use": "@vercel/python",
+      "config": {
+        "runtime": "python3.11",
+        "entrypoint": "main:sio_app"
+      }
+    }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "api/index.py" }
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/socket.io/(.*)",
+      "dest": "main.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "main.py"
+    }
   ]
 }
