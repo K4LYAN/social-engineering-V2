@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import socketio
 import datetime
-import os  # <-- Make sure 'os' is imported
+import os
 
 # ---------- In-memory prototype stores (NOT for production) ----------
 users = {}  # username -> password (plaintext here for prototype only)
@@ -32,11 +32,8 @@ STATIC_DIR = os.path.join(BASE_DIR, "static")
 # Define the absolute path for the 'templates' directory
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 
-# Create the static directory if it doesn't exist (good practice)
-if not os.path.exists(STATIC_DIR):
-    os.makedirs(STATIC_DIR)
-
 # Mount static files using the ABSOLUTE path
+# This will FAIL if the 'static' folder does not exist in your GitHub repo
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Load templates using the ABSOLUTE path
